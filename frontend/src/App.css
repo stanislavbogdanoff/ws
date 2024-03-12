@@ -1,0 +1,191 @@
+* {
+  box-sizing: border-box;
+}
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.primary-btn {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+a:hover {
+}
+
+.primary-btn:hover {
+  border-color: #646cff;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.bounce {
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-name: bounce;
+  animation-timing-function: ease-in-out;
+}
+
+.pulse {
+  font-size: 16px;
+  text-transform: uppercase;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  border: solid 1px #fff;
+  width: 70px;
+  height: 70px;
+  transition: 0.2s;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #000;
+}
+
+.pulse:hover {
+  background-color: transparent;
+  color: #fff;
+}
+
+.pulse:before,
+.pulse:after {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  content: "";
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100%;
+  border: 1px solid #fff;
+  animation-iteration-count: infinite;
+  animation-duration: 2s;
+  animation-direction: alternate;
+}
+.pulse:before {
+  animation-name: pulse;
+}
+.pulse:after {
+  transform: translate(-50%, -50%) scale(1);
+  animation-name: pulse2;
+}
+@keyframes pulse {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1.4);
+  }
+}
+@keyframes pulse2 {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+main {
+  margin-top: 120px;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.user-card {
+  border: solid 1px #fff;
+}
+
+.users-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.data-input-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0;
+}
+
+.data-input-box input {
+}
+
+.input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 50px 0;
+}
+
+.alert {
+  font-size: 48px;
+  color: red;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
