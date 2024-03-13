@@ -1,16 +1,16 @@
-// server.js
-
 const express = require("express");
-const http = require("http");
-const socketIo = require("socket.io");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
+const cors = require("cors");
+const { Message } = require("./models/messageSchema");
+
 const dotenv = require("dotenv");
 dotenv.config();
 
 // Initialize Express app
 const app = express();
+const http = require("http");
 const server = http.createServer(app);
+const socketIo = require("socket.io");
 const io = socketIo(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -18,23 +18,15 @@ const io = socketIo(server, {
   },
 });
 
-const { socketProtect } = require("./middleware/socketAuthMiddleware");
-io.use(socketProtect);
-
-const cors = require("cors");
-const { Message } = require("./models/messageSchema");
 corsOptions = {
   origin: "http://localhost:5173",
 };
 app.use(cors(corsOptions));
 
-// Set up MongoDB connection
 mongoose.connect("mongodb://localhost:27017/messenger");
 
-// Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Routes
 app.get("/messages", async (req, res) => {
   try {
     const messages = await Message.find().sort({ timestamp: 1 });
@@ -47,6 +39,7 @@ app.get("/messages", async (req, res) => {
 
 app.post("/messages", async (req, res) => {
   try {
+    console.log(req.body);
     const { author, content } = req.body;
     const message = await Message.create({ author, content });
     io.emit("message", message);
@@ -57,24 +50,18 @@ app.post("/messages", async (req, res) => {
   }
 });
 
-// Handle socket connections
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.user}`);
-  //   console.log("SOCKET", socket);
+// io.use(socketProtect);
 
-  socket.on("message", (data) => {
-    const { content } = data;
-    // Broadcast message with user's identity
-    io.emit("message", { userId: socket.user._id, content });
-  });
+io.on("connection", (socket) => {
+  console.log("A user connected");
 
   socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.user._id}`);
+    console.log("A client disconnected");
   });
 });
 
 app.use("/auth", require("./routes/authRoutes"));
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

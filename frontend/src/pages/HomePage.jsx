@@ -1,5 +1,3 @@
-// App.js
-
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
@@ -7,24 +5,24 @@ import { useUser } from "../hooks/useUser";
 
 function HomePage() {
   const user = useUser();
+
   const socket = io("http://localhost:5000", {
-    auth: {
-      token: user?.token,
-    },
+    "force new connection": true,
+    reconnectionAttempts: "Infinity",
+    timeout: 10000,
   });
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ author: "", content: "" });
 
   useEffect(() => {
-    // Fetch initial messages from the server
     axios
       .get("http://localhost:5000/messages")
       .then((response) => setMessages(response.data))
-      .catch((error) => console.error(error));
+      .catch((error) => console.error("Error fetching messages:", error));
 
-    // Listen for new messages from the server
     socket.on("message", (message) => {
+      console.log("Received new message:", message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -33,13 +31,14 @@ function HomePage() {
     };
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Send new message to the server
+  const handleSubmit = () => {
     axios
-      .post("http://localhost:5000/messages", newMessage)
+      .post("http://localhost:5000/messages", {
+        ...newMessage,
+        author: user?.name,
+      })
       .then(() => setNewMessage({ author: "", content: "" }))
-      .catch((error) => console.error(error));
+      .catch((error) => console.error("Error sending message:", error));
   };
 
   const handleChange = (e) => {
@@ -51,14 +50,29 @@ function HomePage() {
     <div>
       <h1>Messenger</h1>
       <div>
-        {messages.map((message, index) => (
-          <div key={index}>
-            <strong>{message.author}: </strong>
-            {message.content}
-          </div>
-        ))}
+        {messages.map((message) => {
+          const date = new Date(message.timestamp);
+
+          const options = {
+            day: "numeric",
+            month: "long",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: false,
+          };
+
+          const formattedDate = date.toLocaleString("en-EN", options);
+
+          return (
+            <div key={message._id}>
+              <strong>{message.author}: </strong>
+              {message.content} <i>{formattedDate}</i>
+            </div>
+          );
+        })}
       </div>
-      <form onSubmit={handleSubmit}>
+      <div>
+        New Message:{" "}
         <input
           type="text"
           name="content"
@@ -66,8 +80,8 @@ function HomePage() {
           placeholder="Your Message"
           onChange={handleChange}
         />
-        <button type="submit">Send</button>
-      </form>
+        <button onClick={handleSubmit}>Send</button>
+      </div>
     </div>
   );
 }
