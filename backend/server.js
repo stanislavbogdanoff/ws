@@ -39,7 +39,6 @@ app.get("/messages", async (req, res) => {
 
 app.post("/messages", async (req, res) => {
   try {
-    console.log(req.body);
     const { author, content } = req.body;
     const message = await Message.create({ author, content });
     io.emit("message", message);
@@ -63,5 +62,5 @@ io.on("connection", (socket) => {
 app.use("/auth", require("./routes/authRoutes"));
 
 // Start server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -35,7 +35,7 @@ function HomePage() {
     axios
       .post("http://localhost:5000/messages", {
         ...newMessage,
-        author: user?.name,
+        author: user?.name || "Anonymous",
       })
       .then(() => setNewMessage({ author: "", content: "" }))
       .catch((error) => console.error("Error sending message:", error));
