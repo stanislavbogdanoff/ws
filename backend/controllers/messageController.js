@@ -16,7 +16,7 @@ const sendPublicMessage = async (req, res) => {
       .populate("reciever")
       .populate("sender");
 
-    io.emit("message", message); // Send message only to the receiver
+    io.emit("public_message", message); // Send message only to the receiver
 
     res.status(201).json(newMessage);
   } catch (err) {

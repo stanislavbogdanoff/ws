@@ -27,7 +27,7 @@ function HomePage() {
         .then((response) => setMessages(response.data))
         .catch((error) => console.error("Error fetching messages:", error));
 
-      socket.on("message", (message) => {
+      socket.on("public_message", (message) => {
         console.log("Received new message:", message);
         setMessages((prevMessages) => [...prevMessages, message]);
       });
