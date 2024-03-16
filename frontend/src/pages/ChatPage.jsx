@@ -1,9 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import axios from "axios";
 import { useUser } from "../hooks/useUser";
 
-function HomePage() {
+const ChatPage = () => {
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState({ author: "", content: "" });
+
+  const { userId } = useParams();
+  const recieverId = userId;
+
   const user = useUser();
   const token = user?.token || null;
 
@@ -14,14 +21,11 @@ function HomePage() {
     },
   });
 
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState({ content: "" });
-
   useEffect(() => {
     if (token && typeof token === "string") {
       socket.connect();
       axios
-        .get("http://localhost:5000/messages", {
+        .get(`http://localhost:5000/messages/private/${recieverId}`, {
           headers: { Authorization: `Bearer ${user?.token}` },
         })
         .then((response) => setMessages(response.data))
@@ -41,14 +45,14 @@ function HomePage() {
   const handleSubmit = () => {
     axios
       .post(
-        "http://localhost:5000/messages",
+        "http://localhost:5000/messages/private",
         {
           ...newMessage,
-          isPublic: true,
+          recieverId: recieverId,
         },
         { headers: { Authorization: `Bearer ${user?.token}` } }
       )
-      .then(() => setNewMessage({ content: "" }))
+      .then(() => setNewMessage({ author: "", content: "" }))
       .catch((error) => console.error("Error sending message:", error));
   };
 
@@ -58,8 +62,7 @@ function HomePage() {
   };
 
   return (
-    <div>
-      <h1>Messenger</h1>
+    <>
       <div>
         {messages.map((message) => {
           const date = new Date(message.timestamp);
@@ -76,7 +79,7 @@ function HomePage() {
 
           return (
             <div key={message._id}>
-              <strong>{message.author}: </strong>
+              <strong>{message.sender.name}: </strong>
               {message.content} <i>{formattedDate}</i>
             </div>
           );
@@ -93,8 +96,8 @@ function HomePage() {
         />
         <button onClick={handleSubmit}>Send</button>
       </div>
-    </div>
+    </>
   );
-}
+};
 
-export default HomePage;
+export default ChatPage;
