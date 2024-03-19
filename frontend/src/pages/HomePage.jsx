@@ -20,20 +20,25 @@ function HomePage() {
   useEffect(() => {
     if (token && typeof token === "string") {
       socket.connect();
+
+      // Считываение истории сообщений
       axios
         .get("http://localhost:5000/messages", {
-          headers: { Authorization: `Bearer ${user?.token}` },
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => setMessages(response.data))
         .catch((error) => console.error("Error fetching messages:", error));
 
+      // Слушатель событий
       socket.on("public_message", (message) => {
         console.log("Received new message:", message);
         setMessages((prevMessages) => [...prevMessages, message]);
       });
 
+      //
       return () => {
-        socket.off("message");
+        // Закрываю слушатель событий
+        socket.off("public_message");
       };
     }
   }, [token]);
