@@ -16,6 +16,7 @@ function HomePage() {
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ content: "" });
+  console.log("newMessage", newMessage);
 
   useEffect(() => {
     if (token && typeof token === "string") {
@@ -24,7 +25,7 @@ function HomePage() {
       // Считываение истории сообщений
       axios
         .get("http://localhost:5000/messages", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${user?.token}` },
         })
         .then((response) => setMessages(response.data))
         .catch((error) => console.error("Error fetching messages:", error));
@@ -35,7 +36,7 @@ function HomePage() {
         setMessages((prevMessages) => [...prevMessages, message]);
       });
 
-      //
+      // Срабатывает, когда компонент перестает отрисовываться
       return () => {
         // Закрываю слушатель событий
         socket.off("public_message");
@@ -51,7 +52,7 @@ function HomePage() {
           ...newMessage,
           isPublic: true,
         },
-        { headers: { Authorization: `Bearer ${user?.token}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then(() => setNewMessage({ content: "" }))
       .catch((error) => console.error("Error sending message:", error));
