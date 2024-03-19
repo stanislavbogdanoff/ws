@@ -14,9 +14,22 @@ const sendPublicMessage = async (req, res) => {
 
     const newMessage = await Message.findById(message._id).populate("sender");
 
-    io.emit("public_message", message); // Send message only to the receiver
+    // Отправляет событие всем подключенным клиентам
+    io.emit("public_message", newMessage); // Send message only to the receiver
 
     res.status(201).json(newMessage);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getPublicMessages = async (req, res) => {
+  try {
+    const messages = await Message.find({ isPublic: true })
+      .populate("sender")
+      .sort({ timestamp: 1 });
+    res.json(messages);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -67,19 +80,6 @@ const getPrivateMessages = async (req, res) => {
         },
       ],
     })
-      .populate("sender")
-      .populate("reciever")
-      .sort({ timestamp: 1 });
-    res.json(messages);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-const getPublicMessages = async (req, res) => {
-  try {
-    const messages = await Message.find({ isPublic: true })
       .populate("sender")
       .populate("reciever")
       .sort({ timestamp: 1 });

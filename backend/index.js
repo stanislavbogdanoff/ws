@@ -1,8 +1,7 @@
 const express = require("express");
 const app = express();
 
-const { createServer } = require("node:http");
-const bodyParser = require("body-parser");
+const { createServer } = require("http");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 
@@ -11,6 +10,8 @@ corsOptions = {
   origin: "http://localhost:5173",
 };
 app.use(cors(corsOptions));
+
+app.use(express.json());
 
 mongoose.connect("mongodb://localhost:27017/messenger");
 
@@ -22,8 +23,6 @@ const port = process.env.PORT || 5000;
 
 const httpServer = createServer(app);
 
-app.use(bodyParser.json());
-
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:5173",
@@ -31,6 +30,7 @@ const io = new Server(httpServer, {
   },
 });
 
+// Устанавливаем в настройках сервера инстанции WebSocket-сервера
 app.set("io", io);
 
 app.use("/messages", require("./routes/messageRoutes"));
