@@ -12,9 +12,7 @@ const sendPublicMessage = async (req, res) => {
       isPublic: true,
     });
 
-    const newMessage = await Message.findById(message._id)
-      .populate("reciever")
-      .populate("sender");
+    const newMessage = await Message.findById(message._id).populate("sender");
 
     io.emit("public_message", message); // Send message only to the receiver
 

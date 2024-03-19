@@ -58,9 +58,8 @@ function HomePage() {
   };
 
   return (
-    <div>
-      <h1>Messenger</h1>
-      <div>
+    <div className="container">
+      <div className="message_display">
         {messages.map((message) => {
           const date = new Date(message.timestamp);
 
@@ -75,23 +74,29 @@ function HomePage() {
           const formattedDate = date.toLocaleString("en-EN", options);
 
           return (
-            <div key={message._id}>
-              <strong>{message.author}: </strong>
-              {message.content} <i>{formattedDate}</i>
+            <div key={message._id} className={`message_row`}>
+              <div className="message_wrapper">
+                <strong>{message.sender.name}: </strong>
+                <div className="message_box">
+                  {message.content} <br /> <i>{formattedDate}</i>
+                </div>
+              </div>
             </div>
           );
         })}
       </div>
       <div>
-        New Message:{" "}
-        <input
-          type="text"
-          name="content"
-          value={newMessage.content}
-          placeholder="Your Message"
-          onChange={handleChange}
-        />
-        <button onClick={handleSubmit}>Send</button>
+        <div className="message_input-box">
+          <textarea
+            className="message_input"
+            type="text"
+            name="content"
+            value={newMessage.content}
+            placeholder="Your Message"
+            onChange={handleChange}
+          />
+          <button onClick={handleSubmit}>Send</button>
+        </div>
       </div>
     </div>
   );

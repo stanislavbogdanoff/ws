@@ -70,3 +70,50 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.message_row {
+  display: flex;
+}
+
+.message_row.author {
+  justify-content: flex-end;
+}
+
+.message_row.author .message_box {
+  background-color: #ffffff19;
+}
+
+.message_box {
+  padding: 10px;
+  border: solid 1px grey;
+  border-radius: 10px;
+}
+
+.message_display {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.message_input-box {
+  bottom: 100px;
+  left: 0;
+  right: 0;
+  margin-top: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.message_input {
+  width: 100%;
+  margin-right: 20px;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+}
