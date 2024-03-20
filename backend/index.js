@@ -1,46 +1,55 @@
 const express = require("express");
-const app = express();
-
+const mongoose = require("mongoose");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const mongoose = require("mongoose");
-
-const cors = require("cors");
-corsOptions = {
-  origin: "http://localhost:5173",
-};
-app.use(cors(corsOptions));
-
-app.use(express.json());
-
-mongoose.connect("mongodb://localhost:27017/messenger");
-
 const dotenv = require("dotenv");
 const { socketProtect } = require("./middleware/socketAuthMiddleware");
-dotenv.config();
 
-const port = process.env.PORT || 5000;
+// Создаем приложение
+const app = express();
 
+// Создаем HTTP сервер
 const httpServer = createServer(app);
 
+// Создаем WebSocket сервер
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "http://localhost:5174",
     methods: ["GET", "POST"],
   },
 });
 
-// Устанавливаем в настройках сервера инстанции WebSocket-сервера
-app.set("io", io);
+// Настройка CORS для express
+const cors = require("cors");
+corsOptions = {
+  origin: "http://localhost:5174",
+};
+app.use(cors(corsOptions));
+
+// Middleware для конвертации тел запросов в JSON
+app.use(express.json());
+
+// Подключение к БД
+mongoose.connect("mongodb://localhost:27017/messenger");
+
+// Конфигурация пути до .env
+dotenv.config();
+
+// Подключение эндпоинтов для сообщений
 
 app.use("/messages", require("./routes/messageRoutes"));
+app.use("/auth", require("./routes/authRoutes"));
+
+// Применение middleware для авторизации WebSocket событий
 
 io.engine.use(socketProtect);
 
-io.on("connection", (socket) => {
-  console.log("A user connected", socket.request.user);
+// Слушатель подключения/отключения
 
-  const roomId = socket?.request?.user?._id;
+io.on("connection", (socket) => {
+  console.log("A user connected", socket.request.user._id);
+
+  const roomId = socket.request.user._id;
 
   if (roomId) {
     socket.join(roomId);
@@ -48,9 +57,16 @@ io.on("connection", (socket) => {
   }
 
   socket.on("disconnect", () => {
-    console.log("A client disconnected");
+    // console.log("A client disconnected", socket.request.user);
   });
 });
+
+// Устанавливаем в настройках сервера инстанцию WebSocket-сервера
+app.set("io", io);
+
+// Запуск сервера
+
+const port = process.env.PORT || 5001;
 
 httpServer.listen(port, () => {
   console.log(`application is running at: http://localhost:${port}`);

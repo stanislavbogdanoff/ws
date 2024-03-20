@@ -8,13 +8,12 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ author: "", content: "" });
 
-  const { userId } = useParams();
-  const recieverId = userId;
+  const { recieverId } = useParams();
 
   const user = useUser();
   const token = user?.token || null;
 
-  const socket = io("http://localhost:5000", {
+  const socket = io("http://localhost:5001", {
     autoConnect: false,
     extraHeaders: {
       authorization: `bearer ${token}`,
@@ -22,11 +21,12 @@ const ChatPage = () => {
   });
 
   useEffect(() => {
-    if (token && typeof token === "string") {
+    if (token) {
       socket.connect();
+
       axios
-        .get(`http://localhost:5000/messages/private/${recieverId}`, {
-          headers: { Authorization: `Bearer ${user?.token}` },
+        .get(`http://localhost:5001/messages/private/${recieverId}`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => setMessages(response.data))
         .catch((error) => console.error("Error fetching messages:", error));
@@ -45,7 +45,7 @@ const ChatPage = () => {
   const handleSubmit = () => {
     axios
       .post(
-        "http://localhost:5000/messages/private",
+        "http://localhost:5001/messages/private",
         {
           ...newMessage,
           recieverId: recieverId,

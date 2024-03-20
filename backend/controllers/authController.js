@@ -2,8 +2,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/userSchema");
 
-const generateToken = (id) => {
-  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
+const generateToken = (data) => {
+  return jwt.sign({ data }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 };
@@ -20,7 +20,7 @@ const register = async (req, res) => {
     age: user.age,
     jobTitle: user.jobTitle,
     role: user.role,
-    token: generateToken(user._id),
+    token: generateToken(user),
   });
 };
 
@@ -29,16 +29,14 @@ const login = async (req, res) => {
   const user = await User.findOne({ name });
 
   if (user) {
-    // User found, now check password
     if (await bcrypt.compare(password, user.password)) {
-      // Passwords match, generate token and send response
       res.status(200).json({
         _id: user.id,
         name: user.name,
         age: user.age,
         jobTitle: user.jobTitle,
         role: user.role,
-        token: generateToken(user._id),
+        token: generateToken(user),
       });
     } else {
       // Passwords don't match

@@ -1,5 +1,7 @@
 const { Message } = require("../models/messageSchema");
 
+//@route  POST /messages
+
 const sendPublicMessage = async (req, res) => {
   try {
     const io = req.app.get("io");
@@ -15,7 +17,7 @@ const sendPublicMessage = async (req, res) => {
     const newMessage = await Message.findById(message._id).populate("sender");
 
     // Отправляет событие всем подключенным клиентам
-    io.emit("public_message", newMessage); // Send message only to the receiver
+    io.emit("public_message", newMessage);
 
     res.status(201).json(newMessage);
   } catch (err) {
@@ -23,6 +25,8 @@ const sendPublicMessage = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+//@rotue  GET /messages
 
 const getPublicMessages = async (req, res) => {
   try {
@@ -36,12 +40,16 @@ const getPublicMessages = async (req, res) => {
   }
 };
 
+//@route  POST /messages/private
+
 const sendPrivateMessage = async (req, res) => {
   try {
     const io = req.app.get("io");
 
+    // console.log("io", io);
+
     const { recieverId } = req.body;
-    const senderId = String(req.user._id); // Assuming req.user contains user data
+    const senderId = String(req.user._id);
 
     const message = await Message.create({
       ...req.body,
@@ -53,9 +61,9 @@ const sendPrivateMessage = async (req, res) => {
       .populate("reciever")
       .populate("sender");
 
-    console.log("PRIVATE MESSAGE", recieverId, senderId);
-
+    // io.emit("message", newMessage);
     io.to(senderId).to(recieverId).emit("message", newMessage);
+    console.log("IDS => ", senderId, recieverId);
 
     res.status(201).json(message);
   } catch (err) {
@@ -63,6 +71,8 @@ const sendPrivateMessage = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+//@route GET /messages/private/:recieverId
 
 const getPrivateMessages = async (req, res) => {
   const senderId = req.user._id;

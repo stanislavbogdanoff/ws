@@ -7,7 +7,7 @@ function HomePage() {
   const user = useUser();
   const token = user?.token || null;
 
-  const socket = io("http://localhost:5000", {
+  const socket = io("http://localhost:5001", {
     autoConnect: false,
     extraHeaders: {
       authorization: `bearer ${token}`,
@@ -24,7 +24,7 @@ function HomePage() {
 
       // Считываение истории сообщений
       axios
-        .get("http://localhost:5000/messages", {
+        .get("http://localhost:5001/messages", {
           headers: { Authorization: `Bearer ${user?.token}` },
         })
         .then((response) => setMessages(response.data))
@@ -47,12 +47,12 @@ function HomePage() {
   const handleSubmit = () => {
     axios
       .post(
-        "http://localhost:5000/messages",
+        "http://localhost:5001/messages",
         {
           ...newMessage,
           isPublic: true,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${user?.token}` } }
       )
       .then(() => setNewMessage({ content: "" }))
       .catch((error) => console.error("Error sending message:", error));

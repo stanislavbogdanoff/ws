@@ -11,12 +11,10 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       console.log("decoded", decoded);
-      const user = await User.findById(decoded.data._id).select("-password");
-      console.log("USER", user);
-      req.user = user;
+      req.user = decoded.data;
       next();
     } catch (error) {
-      res.status(401).json({ error: error });
+      res.status(401).json({ error: JSON.stringify(error) });
       // throw new Error(error);
     }
   } else {

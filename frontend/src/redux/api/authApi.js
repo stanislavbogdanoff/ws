@@ -3,7 +3,7 @@ import { loginUser, registerUser } from "../slices/authSlice";
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5001" }),
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => ({
