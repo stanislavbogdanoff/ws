@@ -46,8 +46,6 @@ const sendPrivateMessage = async (req, res) => {
   try {
     const io = req.app.get("io");
 
-    // console.log("io", io);
-
     const { recieverId } = req.body;
     const senderId = String(req.user._id);
 
@@ -61,9 +59,7 @@ const sendPrivateMessage = async (req, res) => {
       .populate("reciever")
       .populate("sender");
 
-    // io.emit("message", newMessage);
     io.to(senderId).to(recieverId).emit("message", newMessage);
-    console.log("IDS => ", senderId, recieverId);
 
     res.status(201).json(message);
   } catch (err) {
@@ -75,9 +71,10 @@ const sendPrivateMessage = async (req, res) => {
 //@route GET /messages/private/:recieverId
 
 const getPrivateMessages = async (req, res) => {
-  const senderId = req.user._id;
-  const { recieverId } = req.params;
   try {
+    const senderId = req.user._id;
+    const { recieverId } = req.params;
+
     const messages = await Message.find({
       $or: [
         {
@@ -93,7 +90,7 @@ const getPrivateMessages = async (req, res) => {
       .populate("sender")
       .populate("reciever")
       .sort({ timestamp: 1 });
-    res.json(messages);
+    res.status(200).json(messages);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

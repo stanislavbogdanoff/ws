@@ -14,7 +14,7 @@ const socketProtect = (req, res, next) => {
     return next(new Error("no token"));
   }
 
-  // bearer asdfasdfasdfasdf
+  // bearer token
 
   if (!header.startsWith("bearer ")) {
     return next(new Error("invalid token"));

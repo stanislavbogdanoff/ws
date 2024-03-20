@@ -47,9 +47,9 @@ io.engine.use(socketProtect);
 // Слушатель подключения/отключения
 
 io.on("connection", (socket) => {
-  console.log("A user connected", socket.request.user._id);
+  const roomId = socket?.request?.user?._id || null;
 
-  const roomId = socket.request.user._id;
+  console.log(`A user connected ${roomId}`);
 
   if (roomId) {
     socket.join(roomId);

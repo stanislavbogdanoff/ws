@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRegisterMutation } from "../redux/api/authApi";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+
   const [credentials, setCredentials] = useState({
     name: null,
     password: null,
@@ -10,7 +13,13 @@ const RegisterPage = () => {
     role: null,
   });
 
-  const [register] = useRegisterMutation();
+  const [register, { isSuccess: registerSuccess }] = useRegisterMutation();
+
+  console.log("registerSuccess", registerSuccess);
+
+  useEffect(() => {
+    if (registerSuccess) navigate("/");
+  }, [registerSuccess, navigate]);
 
   return (
     <main>

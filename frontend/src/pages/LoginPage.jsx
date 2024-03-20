@@ -9,7 +9,6 @@ const LoginPage = () => {
     password: null,
   });
 
-  console.log(credentials);
   const [login, { isSuccess: loginSuccess }] = useLoginMutation();
 
   useEffect(() => {
